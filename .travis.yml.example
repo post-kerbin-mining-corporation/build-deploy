@@ -1,0 +1,32 @@
+# Example travis script for using these build and deploy scipts
+language: python
+python:
+  - 3.6
+install:
+  - pip install awscli boto3 requests
+branches:
+  only:
+    - master # only run me on merges to master
+script:
+  - git clone https://github.com/post-kerbin-mining-corporation/build-deploy.git  # clone this repo
+  - git checkout master # change this to run off a different CI repo branch
+  - python package.py  # Run the package script
+before_deploy:
+  - python stage.py  # Run the staging script
+deploy:
+  - provider: script
+    script: python build_scripts/deploy.py 
+    skip_cleanup: true
+    on:
+      condition: $TRAVIS_BRANCH = master
+  - provider: s3 # releases to S3
+    access_key_id: $AWS_ACCESS_KEY_ID
+    secret_access_key: $AWS_SECRET_ACCESS_KEY
+    bucket: "nertea-ksp-modding-releases"
+    local_dir: deploy
+    skip_cleanup: true
+    acl: public_read
+    region: us-east-2
+    upload-dir: cryo-engines
+    on:
+      condition: $TRAVIS_BRANCH = master
