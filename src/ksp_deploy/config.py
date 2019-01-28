@@ -14,6 +14,7 @@ class SSMKeys:
     SPACEDOCK_PASSWORD = "ksp-spacedock-password"
     CURSEFORGE_TOKEN = "ksp-curseforge-token"
     GITHUB_USER = "ksp-github-user"
+    GITHUB_USER_EMAIL = "ksp-github-user-email"
     GITHUB_OAUTH_TOKEN = "ksp-github-oauth-token"
 
 class tcolors:
