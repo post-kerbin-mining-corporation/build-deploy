@@ -7,7 +7,8 @@ from contextlib import closing
 import requests
 from requests.auth import HTTPBasicAuth
 
-from ksp_deploy.config import ENABLE_SSL
+from ksp_deploy.authentication import get_ssm_value
+from ksp_deploy.config import ENABLE_SSL, SSMKeys
 
 
 class GitHubReleasesAPI(object):
@@ -126,12 +127,10 @@ class GitHubReleasesAPI(object):
             release_id (int): the github release ID
             zip (str): path to the zip to upload
         """
-        slug = os.environ["TRAVIS_REPO_SLUG"]
-        owner, repo = slug.split('/')
         file_name = os.path.basename(zip)
 
         release_url = self.release_base_url.format(
-            owner=owner, repo=repo, release_id=release_id) + f"?name={file_name}"
+            owner=self.owner, repo=self.repo, release_id=release_id) + f"?name={file_name}"
         self.logger.info(f"> Posting {zip} to {release_url}")
         headers={
             'Content-Type': 'application/zip'

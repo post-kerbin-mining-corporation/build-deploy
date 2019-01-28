@@ -5,6 +5,7 @@ import zipfile
 import zlib
 from argparse import ArgumentParser
 
+from ksp_deploy.authentication import get_ssm_value
 from ksp_deploy.config import SSMKeys
 from ksp_deploy.logging import set_logging
 from ksp_deploy.helpers import get_build_data, get_version_file_info, get_changelog, get_version
@@ -30,7 +31,7 @@ def deploy():
 
     zipfile = os.path.join("deploy", f"{build_data['mod-name']}_" + "{MAJOR}_{MINOR}_{PATCH}.zip".format(**version_data["VERSION"]))
     logger.info(f"Deploying {zipfile}")
-
+    print(build_data)
     if "SpaceDock" in build_data["deploy"] and build_data["deploy"]["SpaceDock"]["enabled"]:
         deploy_spacedock(
             get_version(version_data),
@@ -103,15 +104,16 @@ def deploy_github(version, changelog, zipfile):
 
     github_user = get_ssm_value(SSMKeys.GITHUB_USER)
     github_token = get_ssm_value(SSMKeys.GITHUB_OAUTH_TOKEN)
+    repo_slug = os.environ["TRAVIS_REPO_SLUG"]
 
-    with GitHubReleasesAPI(github_user, github_token) as api:
+    with GitHubReleasesAPI(github_user, github_token, repo_slug) as api:
 
         latest = api.get_latest_release()
-        logger.info("Latest release was {name}")
-        latest_name = latest["name"]
+
+        latest_name = latest.get("name", "")
+        logger.info(f"Latest release was {latest_name}")
         slug = os.environ["TRAVIS_REPO_SLUG"]
         owner, repo = slug.split('/')
-
         if latest_name == f"{repo} {version}":
             latest_id = latest["id"]
             assets = api.get_release_assets(latest_id)
