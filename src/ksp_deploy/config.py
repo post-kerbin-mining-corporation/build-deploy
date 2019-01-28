@@ -7,7 +7,7 @@ BUILD_DATA_NAME = ".mod_data.yml"
 CHANGELOG_PATH = "changelog.txt"
 DEPENDENCY_BUCKET = "nertea-ksp-modding-dependencies"
 
-ENABLE_SSL = False
+ENABLE_SSL = True
 
 class SSMKeys:
     SPACEDOCK_LOGIN = "ksp-spacedock-login"
