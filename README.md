@@ -1,17 +1,18 @@
-Package and deploy scripts for PKMC mods.
+This repository presents a set of python scripts that can be used to package Kerbal Space Program mods and deploy them to typical locations, in this case S3, GitHub, CurseForge and SpaceDock
 # Usage
-If you want to use these and you're not me, well, you can give it a shot with this guide
+If you want to use these and you're not me, well, you can give it a shot with this guide.
 ## AWS Setup
-These scripts rely on access to AWS Parameter Store (storing credentials) and AWS S3 (storing packages and dependencies). You should create an IAM user with an appropriate policy to read/upload from S3, and read from ParameterStore.
+These scripts rely on access to AWS Parameter Store (storing credentials) and AWS S3 (storing built packages for distribution and dependencies). TO get set up, you should create an IAM user with an appropriate policy to read/upload from S3, and read from ParameterStore.
 
-Sepcifically, you will need:
-1. An S3 bucket with dependencies that you are using
-2. ParameterStore keys with appropriate credentials for your deploy targets
+Infrastructure-wise, you will need:
+1. An S3 bucket with dependencies that you are using.
+2. A second S3 bucket to deploy to, if desired
+3. ParameterStore keys with appropriate credentials for your deploy targets
 
-You can see/change the names of the keys in `ksp_deploy.config.py`
+You can see/change the names of the ParameterStore keys in `ksp_deploy.config.py`
 
 ## Travis-CI Setup
-These scripts run through Travis CI, so you should enable that for your repository. You also need to set two encrypted environment variables through the web interface or CLI for the IAM user you're using.
+These scripts run through Travis CI, so you should enable that for your repository. You also need to set two encrypted environment variables through the web interface or CLI for the IAM user you're using. These authorize access to the AWS account and are used for accessing S3 and ParameterStore. Ensure you follow Travis best practices for storing these.
 * AWS_ACCESS_KEY_ID
 * AWS_SECRET_ACCESS_KEY
 
@@ -19,7 +20,7 @@ These scripts run through Travis CI, so you should enable that for your reposito
 First, copy `.travis.yml` and `.mod_data.yml` to the root of your repository (remove the `.example`). Next, set up your mod data by configuring these files.
 
 ### `.mod_data.yml`
-This file stores mod-specific information about deployment.
+This file stores mod-specific information about deployment. Here you specify your dependencies for packaging and your deploy targets
 
 ```
 # Example annotated build data file
@@ -66,12 +67,12 @@ branches:
 script:
   - git clone https://github.com/post-kerbin-mining-corporation/build-deploy.git  # clone this repo
   - git checkout master # change this to run off a different CI repo branch
-  - python package.py  # Run the package script
+  - python src/package.py  # Run the package script
 before_deploy:
   - python stage.py  # Run the staging script
 deploy:
   - provider: script
-    script: python build_scripts/deploy.py
+    script: python src/build_scripts/deploy.py
     skip_cleanup: true
     on:
       condition: $TRAVIS_BRANCH = master

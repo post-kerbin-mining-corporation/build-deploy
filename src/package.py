@@ -11,7 +11,7 @@ import logging
 from ksp_deploy.logging import set_logging
 from ksp_deploy.helpers import clean_path, get_build_data, get_version_file_info, get_version
 from ksp_deploy.packaging import collect_dependencies, build_extras, build_nodep_release, build_full_release
-from ksp_deploy.config import BUILD_PATH, DEPLOY_PATH, TEMP_PATH, TEMP_CHANGELOG_NAME, TEMP_VERSION_NAME
+from ksp_deploy.config import BUILD_PATH, DEPLOY_PATH, TEMP_PATH
 
 
 def package(core_release, extras_release, complete_release):
