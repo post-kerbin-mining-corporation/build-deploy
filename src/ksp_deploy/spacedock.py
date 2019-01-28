@@ -49,7 +49,6 @@ class SpaceDockAPI(object):
                 return resp.text
 
     def check_version_exists(mod_id, version):
-    {
         """
         Checks to see if this version of the mod exists
 
@@ -67,7 +66,6 @@ class SpaceDockAPI(object):
                 self.logger.info(f"Spacedock already has {version}")
                 return true
         return false
-    }
 
     def update_mod(self, mod_id, version, changelog, game_version, notify_followers, zip):
         """

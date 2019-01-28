@@ -4,7 +4,7 @@ import json
 import yaml
 import stat
 
-from ksp_deploy.config import BUILD_DATA_NAME
+from ksp_deploy.config import BUILD_DATA_NAME, CHANGELOG_PATH
 
 
 def get_version(version_data):

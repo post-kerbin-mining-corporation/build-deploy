@@ -7,6 +7,7 @@ BUILD_DATA_NAME = ".mod_data.yml"
 CHANGELOG_PATH = "changelog.txt"
 DEPENDENCY_BUCKET = "nertea-ksp-modding-dependencies"
 
+AWS_REGION = "us-east-2"
 ENABLE_SSL = True
 
 class SSMKeys:

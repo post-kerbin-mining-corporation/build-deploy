@@ -1,12 +1,14 @@
 # Takes specific pre-deploy actions after builds have completed, like tagging
 import os
 import subprocess
+
 from ksp_deploy.authentication import get_ssm_value
-
-
+from ksp_deploy.helpers import get_build_data, get_version_file_info, get_version
 from ksp_deploy.config import SSMKeys
+from ksp_deploy.logging import set_logging
 
-def tag(version):
+
+def tag():
     """
     Tag the repo if needed.
 
@@ -14,6 +16,12 @@ def tag(version):
         version (str): tag to create
 
     """
+    build_data = get_build_data()
+    version_data = get_version_file_info(build_data["mod-name"])
+    version = get_version(version_data)
+
+    logger.info(f"Tagging {build_data['mod-name']} version {version}")
+
     repo_slug = os.environ["TRAVIS_REPO_SLUG"]
     github_user = get_ssm_value(SSMKeys.GITHUB_USER)
     github_user_email = get_ssm_value(SSMKeys.GITHUB_USER_EMAIL)
@@ -21,7 +29,7 @@ def tag(version):
 
     tag_test_cmd = f"git tag -l {version}"
     output = subprocess.check_output(tag_test_cmd, shell=True)
-    if (version in output):
+    if version in str(output):
         logger.info(f"Tag {version} already exists, skipping tagging")
     else:
         logger.info(f"Tagging repo with {version}")
