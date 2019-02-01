@@ -48,8 +48,18 @@ class GitHubReleasesAPI(object):
         url = f'{self.base_url}/{self.latest_release_url}'.format(
             owner=self.owner, repo=self.repo)
         self.logger.info(f"GET {url}")
+        headers={
+            'User-Agent': self.credentials["username"],
+            'Authorization': f"token {self.credentials['token']}"
+        }
+        
         try:
-            resp = self.session.get(url, verify=ENABLE_SSL)
+            resp = self.session.get(url,
+                verify=ENABLE_SSL,
+                headers=headers,
+                auth=HTTPBasicAuth(
+                    self.credentials["username"],
+                    self.credentials["token"]))
             resp.raise_for_status()
             return resp.json()
         except requests.exceptions.HTTPError as err:
@@ -70,10 +80,18 @@ class GitHubReleasesAPI(object):
         url = f'{self.base_url}/{self.list_release_assets_url}'.format(
             owner=self.owner, repo=self.repo, release_id=id)
         self.logger.info(f"GET {url}")
+        headers={
+            'User-Agent': self.credentials["username"],
+            'Authorization': f"token {self.credentials['token']}"
+        }
         try:
             resp = self.session.get(
                 url,
-                verify=ENABLE_SSL)
+                verify=ENABLE_SSL,
+                headers=headers,
+                auth=HTTPBasicAuth(
+                    self.credentials["username"],
+                    self.credentials["token"]))
             resp.raise_for_status()
             return resp.json()
         except requests.exceptions.HTTPError as err:
@@ -96,16 +114,21 @@ class GitHubReleasesAPI(object):
         payload = {
             "tag_name": version,
             "body": changelog,
-            "name": f"{repo} {version}",
+            "name": f"{self.repo} {version}",
             "target_commitish": "master",
             "draft": False,
             "prerelease": False
+        }
+        headers={
+            'User-Agent': self.credentials["username"],
+            'Authorization': f"token {self.credentials['token']}"
         }
         self.logger.info(f"Posting {payload} to {url}")
         try:
             resp = self.session.post(
                 url,
                 data=json.dumps(payload),
+                headers=headers,
                 verify=ENABLE_SSL,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
@@ -133,7 +156,9 @@ class GitHubReleasesAPI(object):
             owner=self.owner, repo=self.repo, release_id=release_id) + f"?name={file_name}"
         self.logger.info(f"> Posting {zip} to {release_url}")
         headers={
-            'Content-Type': 'application/zip'
+            'Content-Type': 'application/zip',
+            'Authorization': f"token {self.credentials['token']}",
+            'User-Agent': self.credentials["username"]
         }
         try:
             resp = self.session.post(release_url,

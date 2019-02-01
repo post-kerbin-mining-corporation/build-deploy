@@ -110,8 +110,13 @@ def deploy_github(version, changelog, zipfile):
 
         latest = api.get_latest_release()
 
-        latest_name = latest.get("name", "")
-        logger.info(f"Latest release was {latest_name}")
+        try:
+            latest_name = latest.get("name", "")
+            logger.info(f"Latest release was {latest_name}")
+        except AttributeError:
+            logger.info(f"No previous releases")
+            latest_name = ""
+
         slug = os.environ["TRAVIS_REPO_SLUG"]
         owner, repo = slug.split('/')
         if latest_name == f"{repo} {version}":
@@ -125,7 +130,7 @@ def deploy_github(version, changelog, zipfile):
                 logger.warning("Skipping GitHub deploy as version already exists")
                 do_upload = False
         else:
-            logger.info("Creating new release for version {version}")
+            logger.info(f"Creating new release for version {version}")
             response = api.create_release(version, changelog)
             release_id = response["id"]
             do_upload = True
