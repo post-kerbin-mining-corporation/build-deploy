@@ -26,8 +26,9 @@ This file stores mod-specific information about deployment. Here you specify you
 # Example annotated build data file
 mod-name: ModNameHere  # Name of the mod's GameData directory
 package:
-  include-dependencies: true  # Include dependencies in the package
-  included-support-files:  # Include these root-level files in packages
+  included-gamedata  # Include these gamedata-level folders in packages:
+    - ReStock
+  included-support:  # Include these root-level files in packages
     - readme.txt
     - changelog.txt
     - LICENSE
