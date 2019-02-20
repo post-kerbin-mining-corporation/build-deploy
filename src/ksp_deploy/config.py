@@ -3,12 +3,12 @@
 TEMP_PATH = "tmp"
 BUILD_PATH = "build"
 DEPLOY_PATH = "deploy"
-BUILD_DATA_NAME = ".mod_data.yml"
-CHANGELOG_PATH = "changelog.txt"
-DEPENDENCY_BUCKET = "nertea-ksp-modding-dependencies"
+BUILD_DATA_NAME = ".mod_data.yml"  # default path of the build data file
+CHANGELOG_PATH = "changelog.txt"  # name of the changelog file
+DEPENDENCY_BUCKET = "nertea-ksp-modding-dependencies"  # where to look for dependencies
 
 AWS_REGION = "us-east-2"
-ENABLE_SSL = True
+ENABLE_SSL = False
 
 class SSMKeys:
     SPACEDOCK_LOGIN = "ksp-spacedock-login"

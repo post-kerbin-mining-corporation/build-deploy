@@ -1,23 +1,27 @@
 # Takes specific pre-deploy actions after builds have completed, like tagging
 import os
 import subprocess
+from argparse import ArgumentParser
 
 from ksp_deploy.authentication import get_ssm_value
 from ksp_deploy.helpers import get_build_data, get_version_file_info, get_version
-from ksp_deploy.config import SSMKeys
+from ksp_deploy.config import SSMKeys, BUILD_DATA_NAME
 from ksp_deploy.logging import set_logging
 
 
-def tag():
+def tag(mod_data_file):
     """
     Tag the repo if needed.
 
     Inputs:
-        version (str): tag to create
+        mod_data_file (str): path to mod data yaml (defaults to the one in ksp_deploy.config.py)
 
     """
-    build_data = get_build_data()
-    version_data = get_version_file_info(build_data["mod-name"])
+    if mod_data_file == "":
+        mod_data_file = BUILD_DATA_NAME
+    build_data = get_build_data(mod_data_file)
+    version_data = get_version_file_info(os.path.join(os.path.dirname(mod_data_file), "GameData", build_data['mod-name']), build_data['mod-name'])
+
     version = get_version(version_data)
 
     logger.info(f"Tagging {build_data['mod-name']} version {version}")
@@ -42,6 +46,11 @@ def tag():
         subprocess.check_output(push_cmd, shell=True)
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("-f", "--file", default="",
+                        help="custom package data file path")
+
+    args = parser.parse_args()
 
     logger = set_logging("staging")
-    tag()
+    tag(args.file)

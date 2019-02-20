@@ -10,7 +10,6 @@ import ksp_deploy.s3 as s3
 logger = logging.getLogger('packager.dependencies')
 
 
-
 def download_dependency(name, info, temp_path, build_path):
     """
     Downloads a dependency record from either S3 (external dependency) or github (internal dependency)

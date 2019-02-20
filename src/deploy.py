@@ -14,22 +14,25 @@ from ksp_deploy.curseforge import CurseForgeAPI
 from ksp_deploy.github import GitHubReleasesAPI
 
 
-def deploy():
+def deploy(mod_data_file):
     """
     Deploys packages to providers
 
     Inputs:
-        spacedock (bool): deploy to SpaceDock
-        curse (bool): deploy to CurseForge
+        mod_data_file (str): path to mod data yaml (defaults to the one in ksp_deploy.config.py)
     """
-    build_data = get_build_data()
-    version_data = get_version_file_info(build_data["mod-name"])
-    changelog = get_changelog()
+    # Collect build information
+    if mod_data_file == "":
+        mod_data_file = BUILD_DATA_NAME
+    build_data = get_build_data(mod_data_file)
+    version_data = get_version_file_info(os.path.join(os.path.dirname(mod_data_file), "GameData", build_data['mod-name']), build_data['mod-name'])
+
+    changelog = get_changelog(os.path.dirname(mod_data_file))
 
     logger.info(f"Deploying {build_data['mod-name']} version {get_version(version_data)}\n=================")
     logger.info(f"Changes:\n{changelog}")
 
-    zipfile = os.path.join("deploy", f"{build_data['mod-name']}_" + "{MAJOR}_{MINOR}_{PATCH}.zip".format(**version_data["VERSION"]))
+    zipfile = os.path.join("deploy", build_data['mod-name'], f"{build_data['mod-name']}_" + "{MAJOR}_{MINOR}_{PATCH}.zip".format(**version_data["VERSION"]))
     logger.info(f"Deploying {zipfile}")
     print(build_data)
     if "SpaceDock" in build_data["deploy"] and build_data["deploy"]["SpaceDock"]["enabled"]:
@@ -142,5 +145,10 @@ def deploy_github(version, changelog, zipfile):
             logger.warning("Skipping file upload as version already exists")
 
 if __name__ == "__main__":
+    parser = ArgumentParser()
+    parser.add_argument("-f", "--file", default="",
+                        help="custom package data file path")
+
+    args = parser.parse_args()
     logger = set_logging("deployment")
-    deploy()
+    deploy(args.file)
