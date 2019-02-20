@@ -15,16 +15,15 @@ def get_ksp_version(version_data):
   """Returns a formatted KSP version string from the version data dictionary"""
   return "{MAJOR}.{MINOR}.{PATCH}".format(**version_data["KSP_VERSION"])
 
-def get_version_file_info(mod_name):
+def get_version_file_info(gamedata_path, mod_name):
   """Extracts version info from the .version file and returns it as a dictionary"""
-  version_path = os.path.join("GameData", mod_name, "Versioning", f"{mod_name}.version")
+  version_path = os.path.join(gamedata_path, "Versioning", f"{mod_name}.version")
   with open(version_path, "r") as f:
     version_data = json.load(f)
   return version_data
 
-def get_build_data():
-    """Loads the information from the build data file"""
-    build_data_path = BUILD_DATA_NAME
+def get_build_data(build_data_path):
+    """Loads the information from the build data file at the specified path"""
     with open(build_data_path, "r") as f:
       build_data = yaml.load(f)
     return build_data
@@ -49,10 +48,10 @@ def clean_path(path):
     else:
         os.makedirs(path)
 
-def get_changelog():
+def get_changelog(base_path):
   """Extracts a markdown formatted version of the latest changelog.txt entry"""
   log_lines = []
-  with open(CHANGELOG_PATH, "r") as f:
+  with open(os.path.join(base_path, CHANGELOG_PATH), "r") as f:
     for idx, line in enumerate(f):
         if line.startswith("---") or line.startswith("v"):
             pass

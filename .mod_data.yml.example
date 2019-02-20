@@ -2,10 +2,11 @@
 mod-name: ModNameHere
 package:
   include-dependencies: true  # Include dependencies in the package
-  included-support-files:  # Include these root-level files in packages
+  included-gamedata  # Include these gamedata-level folders in packages:
+    - ReStock
+  included-support:  # Include these root-level files in packages
     - readme.txt
     - changelog.txt
-    - LICENSE.md
 dependencies:  # Configure dependencies
   B9PartSwitch:
     version: 2.6.0  # The version to use

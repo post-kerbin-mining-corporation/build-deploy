@@ -1,3 +1,4 @@
+# Class for accessing the CurseForge API
 import requests
 import logging
 from contextlib import closing
