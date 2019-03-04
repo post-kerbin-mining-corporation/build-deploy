@@ -130,8 +130,14 @@ def deploy_github(version, changelog, zipfile):
                 do_upload = True
                 release_id = latest["id"]
             else:
-                logger.warning("Skipping GitHub deploy as version already exists")
-                do_upload = False
+                do_upload = True
+                release_id = latest["id"]
+                for asset in assets:
+                    if asset["name"] == os.path.basename(zipfile):
+                        logger.warning(f"Skipping GitHub deploy as version and file {asset['name']} ({os.path.basename(zipfile)}) already exist")
+                        do_upload = False
+                if do_upload:
+                    logger.warning(f"Release already exists but has a missing asset, {zipfile} will be uploaded")
         else:
             logger.info(f"Creating new release for version {version}")
             response = api.create_release(version, changelog)

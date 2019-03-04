@@ -8,7 +8,7 @@ CHANGELOG_PATH = "changelog.txt"  # name of the changelog file
 DEPENDENCY_BUCKET = "nertea-ksp-modding-dependencies"  # where to look for dependencies
 
 AWS_REGION = "us-east-2"
-ENABLE_SSL = False
+ENABLE_SSL = True
 
 class SSMKeys:
     SPACEDOCK_LOGIN = "ksp-spacedock-login"

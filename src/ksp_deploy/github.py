@@ -52,7 +52,7 @@ class GitHubReleasesAPI(object):
             'User-Agent': self.credentials["username"],
             'Authorization': f"token {self.credentials['token']}"
         }
-        
+
         try:
             resp = self.session.get(url,
                 verify=ENABLE_SSL,
@@ -156,7 +156,7 @@ class GitHubReleasesAPI(object):
             owner=self.owner, repo=self.repo, release_id=release_id) + f"?name={file_name}"
         self.logger.info(f"> Posting {zip} to {release_url}")
         headers={
-            'Content-Type': 'application/zip',
+            'Content-Type': 'application/octet-stream',
             'Authorization': f"token {self.credentials['token']}",
             'User-Agent': self.credentials["username"]
         }

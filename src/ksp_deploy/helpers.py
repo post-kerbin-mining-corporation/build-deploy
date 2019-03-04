@@ -56,7 +56,9 @@ def get_changelog(base_path):
         if line.startswith("---") or line.startswith("v"):
             pass
         else:
-            log_lines.append(line.replace("- ", "* "))
+            if "- " in line:
+                new_line = (len(line.split("- ")[0])*2 * " ") + "* " + line.split("- ")[1]
+                log_lines.append(new_line)
         if idx > 1 and line == "\n":
             break
   return "".join(log_lines)

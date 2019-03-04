@@ -37,7 +37,7 @@ def tag(mod_data_file):
         logger.info(f"Tag {version} already exists, skipping tagging")
     else:
         logger.info(f"Tagging repo with {version}")
-        auth_cmd = f"git config --local user.name '{github_user}' && - git config --local user.email '{github_user_email}' &&  set-url origin https://{github_user}:{github_token}@github.com/{repo_slug}.git"
+        auth_cmd = f"git config --local user.name '{github_user}' && git config --local user.email '{github_user_email}' && git remote rm origin && git remote add origin https://{github_user}:{github_token}@github.com/{repo_slug}.git"
         tag_cmd = f"git tag {version}"
         push_cmd = f"git push origin {version}"
 
