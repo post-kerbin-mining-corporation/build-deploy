@@ -164,7 +164,7 @@ class GitHubReleasesAPI(object):
             resp = self.session.post(release_url,
                 verify=ENABLE_SSL,
                 headers=headers,
-                data={open(zip, 'rb')},
+                data=open(zip, 'rb'),
                 auth=(self.credentials['token'], 'x-oauth-basic')
                 )
             resp.raise_for_status()
