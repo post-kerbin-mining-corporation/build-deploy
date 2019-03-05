@@ -43,10 +43,10 @@ def package(core_release, extras_release, complete_release, mod_data_file):
 
 
     for gamedata_item in build_data['package']['included-gamedata']:
-        shutil.copytree(os.path.join(os.path.dirname(mod_data_file), "GameData"), os.path.join(build_mod_path, "GameData", gamedata_item))
+        shutil.copytree(os.path.join(os.path.dirname(mod_data_file), "GameData"), os.path.join(build_mod_path, "GameData"))
 
     for support_item in build_data['package']['included-support']:
-        shutil.copy(os.path.join(os.path.dirname(mod_data_file), support_item), os.path.join(build_mod_path, support_item))
+        shutil.copy(os.path.join(os.path.dirname(mod_data_file), support_item), os.path.join(build_mod_path))
 
     if core_release:
         logger.info(f"Packaging BASIC release package")
