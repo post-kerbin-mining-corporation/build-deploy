@@ -156,18 +156,16 @@ class GitHubReleasesAPI(object):
             owner=self.owner, repo=self.repo, release_id=release_id) + f"?name={file_name}"
         self.logger.info(f"> Posting {zip} to {release_url}")
         headers={
-            'Content-Type': 'application/octet-stream',
-            'Authorization': f"token {self.credentials['token']}",
-            'User-Agent': self.credentials["username"]
+            'Content-Type': 'application/octet-stream'
+            #'Authorization': f"token {self.credentials['token']}",
+            #'User-Agent': self.credentials["username"]
         }
         try:
             resp = self.session.post(release_url,
                 verify=ENABLE_SSL,
                 headers=headers,
                 files={'zip': open(zip, 'rb')},
-                auth=HTTPBasicAuth(
-                    self.credentials["username"],
-                    self.credentials["token"])
+                auth=(self.credentials['token'], 'x-oauth-basic')
                 )
             resp.raise_for_status()
             self.logger.info(f"{resp.url} returned {resp.text}")
