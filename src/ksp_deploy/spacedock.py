@@ -64,8 +64,8 @@ class SpaceDockAPI(object):
         for v in versions:
             if v["friendly_version"] == version:
                 self.logger.info(f"Spacedock already has {version}")
-                return true
-        return false
+                return True
+        return False
 
     def update_mod(self, mod_id, version, changelog, game_version, notify_followers, zip):
         """
