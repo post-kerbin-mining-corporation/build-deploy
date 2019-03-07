@@ -160,11 +160,13 @@ class GitHubReleasesAPI(object):
             #'Authorization': f"token {self.credentials['token']}",
             #'User-Agent': self.credentials["username"]
         }
+        with open(zip, "rb") as f:
+            content = f.read()
         try:
             resp = self.session.post(release_url,
                 verify=ENABLE_SSL,
                 headers=headers,
-                data=open(zip, 'rb'),
+                data=content,
                 auth=(self.credentials['token'], 'x-oauth-basic')
                 )
             resp.raise_for_status()
