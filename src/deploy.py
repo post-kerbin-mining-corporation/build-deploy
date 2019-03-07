@@ -8,7 +8,7 @@ from argparse import ArgumentParser
 from ksp_deploy.authentication import get_ssm_value
 from ksp_deploy.config import SSMKeys
 from ksp_deploy.logging import set_logging
-from ksp_deploy.helpers import get_build_data, get_version_file_info, get_changelog, get_version
+from ksp_deploy.helpers import get_build_data, get_version_file_info, get_changelog, get_version, get_ksp_version
 from ksp_deploy.spacedock import SpaceDockAPI
 from ksp_deploy.curseforge import CurseForgeAPI
 from ksp_deploy.github import GitHubReleasesAPI
