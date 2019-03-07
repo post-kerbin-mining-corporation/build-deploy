@@ -48,7 +48,7 @@ class SpaceDockAPI(object):
                 self.logger.error(err)
                 return resp.text
 
-    def check_version_exists(mod_id, version):
+    def check_version_exists(self, mod_id, version):
         """
         Checks to see if this version of the mod exists
 
