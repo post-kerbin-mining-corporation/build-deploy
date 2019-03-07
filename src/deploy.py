@@ -87,12 +87,13 @@ def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile):
     spacedock_user = get_ssm_value(SSMKeys.SPACEDOCK_LOGIN)
     spacedock_pw = get_ssm_value(SSMKeys.SPACEDOCK_PASSWORD)
 
-    logger.info("Deploying to SpaceDock")
+    logger.info(f"Deploying {zipfile} to SpaceDock project {mod_id}")
     with SpaceDockAPI(spacedock_user, spacedock_pw) as api:
         if api.check_version_exists(mod_id, version):
             logger.warning("Skipping Spacedock deploy as version already exists")
         else:
-            api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
+            pass
+            #api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
 
 def deploy_github(version, changelog, zipfile):
     """
