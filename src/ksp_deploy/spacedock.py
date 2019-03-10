@@ -91,7 +91,7 @@ class SpaceDockAPI(object):
         print(f"Posting {payload} to {url} with zip file {zipfile}")
 
         try:
-            # resp = self.session.post(url, data=payload, files={'zipball': open(zipfile, 'rb')})
+            resp = self.session.post(url, data=payload, files={'zipball': open(zipfile, 'rb')})
             resp.raise_for_status()
             self.logger.info(f"{resp.url} returned {resp.text}")
             return resp.text
