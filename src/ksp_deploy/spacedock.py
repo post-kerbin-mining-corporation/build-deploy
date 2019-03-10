@@ -67,7 +67,7 @@ class SpaceDockAPI(object):
                 return True
         return False
 
-    def update_mod(self, mod_id, version, changelog, game_version, notify_followers, zip):
+    def update_mod(self, mod_id, version, changelog, game_version, notify_followers, zipfile):
         """
         Submits an update to a mod
 
@@ -77,7 +77,7 @@ class SpaceDockAPI(object):
             changelog (str): a Markdown-formatted changelog
             game_version (str): the string game version to use
             notify_followers (bool): email followers
-            zip (str): the path of the zip to upload
+            zipfile (str): the path of the zip to upload
 
         """
         url = f'{self.base_url}/{self.update_mod_url}'.format(mod_id=mod_id)
@@ -88,9 +88,10 @@ class SpaceDockAPI(object):
             "notify-followers": "yes" if True else "no"
         }
         self.logger.info(f"Posting {payload} to {url}")
+        print(f"Posting {payload} to {url} with zip file {zipfile}")
 
         try:
-            resp = self.session.post(url, data=payload, files={'zipball': open(zip, 'rb')})
+            resp = self.session.post(url, data=payload, files={'zipball': open(zipfile, 'rb')})
             resp.raise_for_status()
             self.logger.info(f"{resp.url} returned {resp.text}")
             return resp.text
