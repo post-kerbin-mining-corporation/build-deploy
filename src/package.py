@@ -54,7 +54,7 @@ def package(core_release, extras_release, complete_release, mod_data_file):
 
     if os.path.exists("Extras"):
       logger.info(f"Packaging EXTRAS release packages")
-      build_extras(version_data, extras_release, build_mod_path, deploy_mod_path)
+      build_extras(version_data, build_mod_path, deploy_mod_path, extras_release)
 
     logger.info(f"Packaging complete release package")
     logger.info(f"Collecting dependencies")
