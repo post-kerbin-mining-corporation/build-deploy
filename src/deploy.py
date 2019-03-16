@@ -92,8 +92,7 @@ def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile):
         if api.check_version_exists(mod_id, version):
             logger.warning("Skipping Spacedock deploy as version already exists")
         else:
-            pass
-            #api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
+            api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
 
 def deploy_github(version, changelog, zipfile):
     """
