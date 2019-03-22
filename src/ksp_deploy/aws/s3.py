@@ -2,7 +2,7 @@
 import boto3
 import botocore
 from urllib.parse import urlparse
-from  ksp_deploy.config import ENABLE_SSL
+from  ksp_deploy.config import KSPConfiguration
 
 
 def copy(src, dest):
@@ -14,7 +14,8 @@ def copy(src, dest):
         src (str): url of source file
         dest (str): url of destination file
     """
-    s3 = boto3.client('s3', verify=ENABLE_SSL)
+    config = KSPConfiguration()
+    s3 = boto3.client('s3', verify=config.ENABLE_SSL)
     if src.startswith("s3"):
         url_parsed = urlparse(src)
         s3.download_file(url_parsed.netloc, url_parsed.path[1:], dest)

@@ -3,7 +3,6 @@ import shutil
 import logging
 
 from ksp_deploy.helpers import ensure_path, clean_path
-from ksp_deploy.config import TEMP_PATH
 from ksp_deploy.dependencies import download_dependency
 
 logger = logging.getLogger('packager.packaging')
@@ -74,7 +73,7 @@ def build_extra(name, version_data, build_package, build_path, deploy_path):
         shutil.make_archive(extra_path, "zip", os.path.join(build_path, "Extras", name))
         logger.info(f"Packaged {extra_path}")
 
-def collect_dependencies(mod_data, build_path):
+def collect_dependencies(mod_data, build_path, config):
     """
     Finds and downloads all the mod's dependencies
 
@@ -83,9 +82,9 @@ def collect_dependencies(mod_data, build_path):
         build_path (str): path into which to build
     """
     dep_data = mod_data["dependencies"]
-    clean_path(TEMP_PATH)
+    clean_path(config.TEMP_PATH)
     for name, info in dep_data.items():
-        download_dependency(name, info, TEMP_PATH, build_path)
+        download_dependency(name, info, config.TEMP_PATH, build_path, config)
     cleanup(mod_data["package"]["included-support"], build_path)
 
 def cleanup(kept_files, build_path):

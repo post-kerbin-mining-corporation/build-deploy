@@ -5,8 +5,9 @@ import zipfile
 import zlib
 from argparse import ArgumentParser
 
-from ksp_deploy.authentication import get_ssm_value
-from ksp_deploy.config import SSMKeys
+from ksp_deploy.config import KSPConfiguration
+from ksp_deploy.credentials import find_credentials
+
 from ksp_deploy.logging import set_logging
 from ksp_deploy.helpers import get_build_data, get_version_file_info, get_changelog, get_version, get_ksp_version
 from ksp_deploy.spacedock import SpaceDockAPI
@@ -21,41 +22,47 @@ def deploy(mod_data_file):
     Inputs:
         mod_data_file (str): path to mod data yaml (defaults to the one in ksp_deploy.config.py)
     """
+    # Create/load the config
+    config = KSPConfiguration()
+
     # Collect build information
     if mod_data_file == "":
-        mod_data_file = BUILD_DATA_NAME
+        mod_data_file = config.BUILD_DATA_NAME
     build_data = get_build_data(mod_data_file)
     version_data = get_version_file_info(os.path.join(os.path.dirname(mod_data_file), "GameData", build_data['mod-name']), build_data['mod-name'])
 
-    changelog = get_changelog(os.path.dirname(mod_data_file))
+    changelog = get_changelog(os.path.join(os.path.dirname(mod_data_file), config.CHANGELOG_PATH))
 
     logger.info(f"Deploying {build_data['mod-name']} version {get_version(version_data)}\n=================")
     logger.info(f"Changes:\n{changelog}")
 
     zipfile = os.path.join("deploy", build_data['mod-name'], f"{build_data['mod-name']}_" + "{MAJOR}_{MINOR}_{PATCH}.zip".format(**version_data["VERSION"]))
     logger.info(f"Deploying {zipfile}")
-    print(build_data)
+
     if "SpaceDock" in build_data["deploy"] and build_data["deploy"]["SpaceDock"]["enabled"]:
         deploy_spacedock(
             get_version(version_data),
             get_ksp_version(version_data),
             build_data["deploy"]["SpaceDock"]['mod-id'],
             changelog,
-            zipfile)
+            zipfile,
+            config)
     if "CurseForge" in build_data["deploy"] and build_data["deploy"]["CurseForge"]["enabled"]:
         deploy_curseforge(
             get_ksp_version(version_data),
             build_data["deploy"]["CurseForge"]['mod-id'],
             changelog,
-            zipfile)
+            zipfile,
+            config)
 
     if "GitHub" in build_data["deploy"] and build_data["deploy"]["GitHub"]["enabled"]:
         deploy_github(
             get_version(version_data),
             changelog,
-            zipfile)
+            zipfile,
+            config)
 
-def deploy_curseforge(ksp_version, mod_id, changelog, zipfile):
+def deploy_curseforge(ksp_version, mod_id, changelog, zipfile, config):
     """
     Performs deployment to CurseForge
 
@@ -64,15 +71,16 @@ def deploy_curseforge(ksp_version, mod_id, changelog, zipfile):
         mod_id (str): CurseForge project ID
         changelog (str): Markdown formatted changelog
         zipfile (str): path to file to upload
+        config (KSPConfiguration): configuration instance
     """
     logger.info("Deploying to CurseForge")
 
-    curse_token = get_ssm_value(SSMKeys.CURSEFORGE_TOKEN)
+    curse_token = find_credentials("CURSEFORGE_TOKEN", config)
 
     with CurseForgeAPI(curse_token) as api:
         api.update_mod(mod_id, changelog, ksp_version, "release", zipfile)
 
-def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile):
+def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile, config):
     """
     Performs deployment to SpaceDock
 
@@ -82,10 +90,11 @@ def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile):
         mod_id (str): CurseForge project ID
         changelog (str): Markdown formatted changelog
         zipfile (str): path to file to upload
+        config (KSPConfiguration): configuration instance
     """
 
-    spacedock_user = get_ssm_value(SSMKeys.SPACEDOCK_LOGIN)
-    spacedock_pw = get_ssm_value(SSMKeys.SPACEDOCK_PASSWORD)
+    spacedock_user = find_credentials("SPACEDOCK_LOGIN", config)
+    spacedock_pw = find_credentials("SPACEDOCK_PASSWORD", config)
 
     logger.info(f"Deploying {zipfile} to SpaceDock project {mod_id}")
     with SpaceDockAPI(spacedock_user, spacedock_pw) as api:
@@ -93,9 +102,9 @@ def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile):
             logger.warning("Skipping Spacedock deploy as version already exists")
         else:
             pass
-            #api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
+            api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
 
-def deploy_github(version, changelog, zipfile):
+def deploy_github(version, changelog, zipfile, config):
     """
     Performs deployment to GitHub releases
 
@@ -103,11 +112,12 @@ def deploy_github(version, changelog, zipfile):
         version (str): mod version
         changelog (str): Markdown formatted changelog
         zipfile (str): path to file to upload
+        config (KSPConfiguration): configuration instance
     """
     logger.info("Deploying to GitHub Releases")
 
-    github_user = get_ssm_value(SSMKeys.GITHUB_USER)
-    github_token = get_ssm_value(SSMKeys.GITHUB_OAUTH_TOKEN)
+    github_user = find_credentials("GITHUB_USER", config)
+    github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)
     repo_slug = os.environ["TRAVIS_REPO_SLUG"]
 
     with GitHubReleasesAPI(github_user, github_token, repo_slug) as api:

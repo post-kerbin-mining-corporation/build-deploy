@@ -10,7 +10,7 @@ import logging
 from ksp_deploy.logging import set_logging
 from ksp_deploy.helpers import clean_path, get_build_data, get_version_file_info, get_version
 from ksp_deploy.packaging import collect_dependencies, build_extras, build_nodep_release, build_full_release
-from ksp_deploy.config import BUILD_PATH, DEPLOY_PATH, TEMP_PATH, BUILD_DATA_NAME
+from ksp_deploy.config import KSPConfiguration
 
 
 def package(core_release, extras_release, complete_release, mod_data_file):
@@ -23,24 +23,26 @@ def package(core_release, extras_release, complete_release, mod_data_file):
         complete_release (bool): whether to build a yes dependency release zip
         mod_data_file (str): path to mod data yaml (defaults to the one in ksp_deploy.config.py)
     """
+    # Create/load the config
+    config = KSPConfiguration()
+
     # Collect build information
     if mod_data_file == "":
-        mod_data_file = BUILD_DATA_NAME
+        mod_data_file = config.BUILD_DATA_NAME
     build_data = get_build_data(mod_data_file)
     version_data = get_version_file_info(os.path.join(os.path.dirname(mod_data_file), "GameData", build_data['mod-name']), build_data['mod-name'])
 
     logger.info(f"Building {build_data['mod-name']} version {get_version(version_data)}\n=================")
 
-    build_mod_path = os.path.join(BUILD_PATH, build_data['mod-name'])
-    deploy_mod_path = os.path.join(DEPLOY_PATH, build_data['mod-name'])
+    build_mod_path = os.path.join(config.BUILD_PATH, build_data['mod-name'])
+    deploy_mod_path = os.path.join(config.DEPLOY_PATH, build_data['mod-name'])
     # Clean/recreate the build, deploy and temp paths
     clean_path(os.path.join(build_mod_path))
     clean_path(os.path.join(deploy_mod_path))
-    clean_path(os.path.join(TEMP_PATH))
+    clean_path(os.path.join(config.TEMP_PATH))
 
     # Copy main mod content
     logger.info(f"Compiling core mod content")
-
 
     for gamedata_item in build_data['package']['included-gamedata']:
         shutil.copytree(os.path.join(os.path.dirname(mod_data_file), "GameData"), os.path.join(build_mod_path, "GameData"))
@@ -58,7 +60,7 @@ def package(core_release, extras_release, complete_release, mod_data_file):
 
     logger.info(f"Packaging complete release package")
     logger.info(f"Collecting dependencies")
-    collect_dependencies(build_data, build_mod_path)
+    collect_dependencies(build_data, build_mod_path, config)
 
     if complete_release:
         logger.info(f"Packaging COMPLETE release package")

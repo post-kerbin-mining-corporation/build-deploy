@@ -7,9 +7,6 @@ from contextlib import closing
 import requests
 from requests.auth import HTTPBasicAuth
 
-from ksp_deploy.authentication import get_ssm_value
-from ksp_deploy.config import ENABLE_SSL, SSMKeys
-
 
 class GitHubReleasesAPI(object):
 
@@ -20,7 +17,7 @@ class GitHubReleasesAPI(object):
     list_release_assets_url = "repos/{owner}/{repo}/releases/{release_id}/assets"
     release_base_url = "https://uploads.github.com/repos/{owner}/{repo}/releases/{release_id}/assets"
 
-    def __init__(self, username, token, repo_slug, session=None):
+    def __init__(self, username, token, repo_slug, session=None, verify=True):
         """
         Initializes the API session
 
@@ -29,6 +26,7 @@ class GitHubReleasesAPI(object):
             token (str): Oauth token
             repo_slug (str): Github repo slug of the form org/repo
         """
+        self.verify = verify
         self.credentials = {"username":username, "token":token}
         self.logger = logging.getLogger('deploy.github')
         self.owner, self.repo = repo_slug.split('/')
@@ -55,7 +53,7 @@ class GitHubReleasesAPI(object):
 
         try:
             resp = self.session.get(url,
-                verify=ENABLE_SSL,
+                verify=verify,
                 headers=headers,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
@@ -87,7 +85,7 @@ class GitHubReleasesAPI(object):
         try:
             resp = self.session.get(
                 url,
-                verify=ENABLE_SSL,
+                verify=verify,
                 headers=headers,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
@@ -129,7 +127,7 @@ class GitHubReleasesAPI(object):
                 url,
                 data=json.dumps(payload),
                 headers=headers,
-                verify=ENABLE_SSL,
+                verify=verify,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
                     self.credentials["token"])
@@ -164,7 +162,7 @@ class GitHubReleasesAPI(object):
             content = f.read()
         try:
             resp = self.session.post(release_url,
-                verify=ENABLE_SSL,
+                verify=verify,
                 headers=headers,
                 data=content,
                 auth=(self.credentials['token'], 'x-oauth-basic')

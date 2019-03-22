@@ -4,8 +4,6 @@ import json
 import yaml
 import stat
 
-from ksp_deploy.config import BUILD_DATA_NAME, CHANGELOG_PATH
-
 
 def get_version(version_data):
   """Returns a formatted version string from the version data dictionary"""
@@ -48,10 +46,10 @@ def clean_path(path):
     else:
         os.makedirs(path)
 
-def get_changelog(base_path):
+def get_changelog(changelog_path):
   """Extracts a markdown formatted version of the latest changelog.txt entry"""
   log_lines = []
-  with open(os.path.join(base_path, CHANGELOG_PATH), "r") as f:
+  with open(changelog_path, "r") as f:
     for idx, line in enumerate(f):
         if line.startswith("---") or line.startswith("v"):
             pass

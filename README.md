@@ -1,26 +1,105 @@
-This repository presents a set of python scripts that can be used to package Kerbal Space Program mods and deploy them to typical locations, in this case S3, GitHub, CurseForge and SpaceDock
+This repository presents a set of Python scripts that can be used to package Kerbal Space Program mods and deploy them to typical user download locations, in this case S3, GitHub, CurseForge and SpaceDock. It uses Travis-CI to do this.
 # Usage
-If you want to use these and you're not me, well, you can give it a shot with this guide.
+If you want to use these and you're not me, well, you can give it a shot with this guide. If you are using them, please let me know so I can refactor/clea things up.
+
+## Credentials
+These scripts require a set of credentials for the various deploy providers that are used. There are currently two options for this.
+### AWS
+The default provider for credentials is AWS Parameter Store. If the flag `USE_SSM_CREDENTIALS` is set to `True` in the `.ksp_deploy_config.yml` file, the package will go and fetch credentials from AWS ParameterStore. The AWS credentials to do this retrieval are used from local environment variables that should be set up as encrypted parameters for the repo in the Travis CI console or CLI. These credentials should have read access to ParameterStore, and read/write access to the S3 buckets you want. Specifically you should set:
+* `AWS_ACCESS_KEY_ID`
+* `AWS_SECRET_ACCESS_KEY`
+
+You can also set up any of the other AWS CLI options such as region in this way. These are the same parameters that Travis will use to deploy to S3.
+
+The parameters you need to set are as follows, though you can get away with less if not using the spacedock or CurseForge deployers.
+* `ksp-spacedock-login`: Spacedock user login
+* `ksp-spacedock-password`: SpaceDock password
+* `ksp-curseforge-token`: Curseforge generated token
+* `ksp-github-user`: Github user name
+* `ksp-github-user-email`: Github user email
+* `ksp-github-oauth-token`: Github Oauth generated token
+
+### Environment Variables
+If you don't want to use AWS to store credentials, set `USE_SSM_CREDENTIALS` to `False` in the `.ksp_deploy_config.yml` file. If you do this you will need to provide the relevant environment variables, likely set up as encrypted parameters for the repo in the Travis CI console or CLI. You need to set the following:
+* `SPACEDOCK_LOGIN`
+* `SPACEDOCK_PASSWORD`
+* `CURSEFORGE_TOKEN`
+* `GITHUB_USER`
+* `GITHUB_USER_EMAIL`
+* `GITHUB_OAUTH_TOKEN`
+
+## Configuration
+How to set things up.
 ## AWS Setup
-These scripts rely on access to AWS Parameter Store (storing credentials) and AWS S3 (storing built packages for distribution and dependencies). TO get set up, you should create an IAM user with an appropriate policy to read/upload from S3, and read from ParameterStore.
+If using AWS, you should set up AWS Parameter Store and AWS S3 (storing built packages for distribution and dependencies). To get set up, you should create an IAM user with an appropriate policy to read/upload from S3, and read from ParameterStore.
 
 Infrastructure-wise, you will need:
 1. An S3 bucket with dependencies that you are using.
 2. A second S3 bucket to deploy to, if desired
-3. ParameterStore keys with appropriate credentials for your deploy targets
-
-You can see/change the names of the ParameterStore keys in `ksp_deploy.config.py`
+3. ParameterStore keys with appropriate credentials for your deploy targets (see Credentials section above)
 
 ## Travis-CI Setup
-These scripts run through Travis CI, so you should enable that for your repository. You also need to set two encrypted environment variables through the web interface or CLI for the IAM user you're using. These authorize access to the AWS account and are used for accessing S3 and ParameterStore. Ensure you follow Travis best practices for storing these.
-* AWS_ACCESS_KEY_ID
-* AWS_SECRET_ACCESS_KEY
+Enable Travis-CI on your repo.
 
 ## Repository Setup
-First, copy `.travis.yml` and `.mod_data.yml` to the root of your repository (remove the `.example`). Next, set up your mod data by configuring these files.
+First, copy `.travis.yml` and `.mod_data.yml` to the root of your repository (remove the `.example`). You can optionally copy `.ksp_deploy_config.yml` if you want to customize paths and options. Next, set up your mod data by configuring these files.
 
-### `.mod_data.yml`
-This file stores mod-specific information about deployment. Here you specify your dependencies for packaging and your deploy targets
+#### `.ksp_deploy_config.yml`
+
+This file allows you to customize some elements of the package. Each setting is optional. 
+
+* `TEMP_PATH`: local temp path. defaults to `tmp`
+* `BUILD_PATH`: local temp path. defaults to `build`
+* `DEPLOY_PATH`: local temp path. defaults to `deploy`
+* `BUILD_DATA_NAME`: name of the mod data file. Defaults to  `.mod_data.yml`
+* `CHANGELOG_PATH`: name of the changelog, defaults to `changelog.txt`
+* `DEPENDENCY_BUCKET`: name of the S3 bucket to pull `s3` type dependencies from. Defaults to `nertea-ksp-modding-dependencies`
+* `AWS_REGION`: AWS region to use, defaults to `us-east-2`
+* `ENABLE_SSL`: Keep `True`
+* `USE_SSM_CREDENTIALS`: Whether to use AWS Parameter Store to get secrets. If False, uses local environment variables. Defaults to `True`
+
+#### `.mod_data.yml`
+This file stores mod-specific information about how to deploy. Here you specify your dependencies for packaging and your deploy targets. Though the file is mostly clear, there are some gotchas
+
+**package**
+
+* `included-gamedata`: if you have multiple GameData-level items in your distribution, specify them here
+* `included-support`: if you have multiple root-level items in your distribution, specify them here
+
+**dependencies**
+
+A dependency block starts with the name of the dependency.
+```
+CryoTanks:
+  location: s3
+  version: 2.6.0  
+```
+ The most important field is the `location` item, which specifies where to fetch this dependency from. There are three possible values:
+
+`s3`
+This specifies that the dependency should be pulled from S3. It will be pulled from the bucket specified in `.ksp_deploy_config.yml`. These items should be zipped with a structure that looks like `GameData/Dependency/Stuff` You should also specify:
+* `version`: A string that will be appended to the mod name to collect the appropriate zip file, eg `CryoTanks_2.6.0.zip`
+
+`github`
+This specifies that the dependency should be a repository cloned from Github. Generally these dependencies should have a root level `GameData` folder containing the dependency. You should also specify:
+* `repository`: The org and name of the repo
+* `tag`: The tag that should be collected
+
+`url`
+This specifies that the dependency is pulled from a simple URL. This can either be a zipfile, like the S3 one described above, or a simple flat single file (eg. a dll). You should also specify:
+* `url`: The URL of the file
+* `zip`: True if this is a standard dependency zip
+
+#### deploy
+
+This scetion provides a list of deploy targets. Each can be enabled or disabled by changing the `enabled` flag. Currently 3 are supported.
+
+`SpaceDock`
+Deploy to Spacedock. You must supply a `mod-id` which is the numeric ID. You must provide the user Id and password of an authorized project contributor via environment variable sor via ParameterStore (see Credentials section)
+`CurseForge`
+Deploy to Curseforge. You must supply a `mod-id` which is the numeric ID of the project. You must provide the CurseForge-generated Oauth token either via environment variable or via ParameterStore (see Credentials section)
+`GitHub`
+Deploy to GitHub releases. You must supply appropriate GitHub user information via environment variables or via ParameterStore (see Credentials section)
 
 ```
 # Example annotated build data file
@@ -49,7 +128,6 @@ deploy:
       mod-id: 230112  # The CurseForge mod ID for deployment
   - GitHub:
       enabled: false  # activate/deactivate this deployment script
-      mod-id: 230112  # The CurseForge mod ID for deployment
 ```
 
 ### `.travis.yml`

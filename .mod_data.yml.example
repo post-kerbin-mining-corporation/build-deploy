@@ -15,6 +15,10 @@ dependencies:  # Configure dependencies
     location: github
     repository: ChrisAdderley/CryoTanks
     tag: 1.1.1  # The release tag to use
+  UrlMod:
+    location: url
+    url: http://yourUrl  # The URL of the file
+    zip:  false # is this a zip or not?
 deploy:
   SpaceDock:
     enabled: false  # activate/deactivate this deployment script
