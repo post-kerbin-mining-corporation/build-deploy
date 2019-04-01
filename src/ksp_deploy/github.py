@@ -53,7 +53,7 @@ class GitHubReleasesAPI(object):
 
         try:
             resp = self.session.get(url,
-                verify=verify,
+                verify=self.verify,
                 headers=headers,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
@@ -85,7 +85,7 @@ class GitHubReleasesAPI(object):
         try:
             resp = self.session.get(
                 url,
-                verify=verify,
+                verify=self.verify,
                 headers=headers,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
@@ -127,7 +127,7 @@ class GitHubReleasesAPI(object):
                 url,
                 data=json.dumps(payload),
                 headers=headers,
-                verify=verify,
+                verify=self.verify,
                 auth=HTTPBasicAuth(
                     self.credentials["username"],
                     self.credentials["token"])
@@ -162,7 +162,7 @@ class GitHubReleasesAPI(object):
             content = f.read()
         try:
             resp = self.session.post(release_url,
-                verify=verify,
+                verify=self.verify,
                 headers=headers,
                 data=content,
                 auth=(self.credentials['token'], 'x-oauth-basic')
