@@ -48,9 +48,9 @@ def build_extras(version_data, build_path, deploy_path, build_packages=False):
         deploy_path (str): path into which to place zips for deploy
         build_packages (bool): whether to create an individual zipfile for each package
     """
-    for root, dirs, files in os.walk("Extras"):
-        for name in dirs:
-            build_extra(name, version_data, build_packages, build_path, deploy_path)
+    dirs = next(os.walk("Extras"))[1]
+    for name in dirs:
+        build_extra(name, version_data, build_packages, build_path, deploy_path)
 
 def build_extra(name, version_data, build_package, build_path, deploy_path):
     """
