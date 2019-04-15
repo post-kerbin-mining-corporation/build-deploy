@@ -81,7 +81,7 @@ def collect_dependencies(mod_data, build_path, config):
         mod_data (dict): the mod data dictionary
         build_path (str): path into which to build
     """
-    dep_data = mod_data["dependencies"]
+    dep_data = mod_data.get("dependencies", {})
     clean_path(config.TEMP_PATH)
     for name, info in dep_data.items():
         download_dependency(name, info, config.TEMP_PATH, build_path, config)
