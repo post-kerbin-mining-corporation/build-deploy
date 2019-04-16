@@ -57,7 +57,8 @@ class CurseForgeAPI(object):
                 self.logger.info(f"Found curse version {curse_version} from string version {game_version}")
 
         if curse_version is None:
-            raise Exception(f"Couldn't determine curse version from game version {game_version}")
+            curse_version = versions[-1]["id"]
+            print(f"Couldn't determine curse version from game version {game_version}, using latest version {curse_version}")
 
         return curse_version
 
