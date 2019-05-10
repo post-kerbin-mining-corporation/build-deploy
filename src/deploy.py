@@ -3,6 +3,7 @@ import os
 import shutil
 import zipfile
 import zlib
+import requests
 from argparse import ArgumentParser
 
 from ksp_deploy.config import KSPConfiguration
@@ -97,11 +98,14 @@ def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile, config):
     spacedock_pw = find_credentials("SPACEDOCK_PASSWORD", config)
 
     logger.info(f"Deploying {zipfile} to SpaceDock project {mod_id}")
-    with SpaceDockAPI(spacedock_user, spacedock_pw) as api:
-        if api.check_version_exists(mod_id, version):
-            logger.warning("Skipping Spacedock deploy as version already exists")
-        else:
-            api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
+    try:
+        with SpaceDockAPI(spacedock_user, spacedock_pw) as api:
+            if api.check_version_exists(mod_id, version):
+                logger.warning("Skipping Spacedock deploy as version already exists")
+            else:
+                api.update_mod(mod_id, version, changelog, ksp_version, True, zipfile)
+    except requests.exceptions.ConnectionError as err:
+        logger.warning(f"Skipping Spacedock deploy as Spacedock is down ({err})")
 
 def deploy_github(version, changelog, zipfile, config):
     """
