@@ -38,7 +38,7 @@ def build_full_release(version_data, mod_data, build_path, deploy_path):
     shutil.make_archive(deploy_zip_path, 'zip', os.path.join(build_path))
     logger.info(f"Packaged {build_path}")
 
-def build_extras(version_data, build_path, deploy_path, build_packages=False):
+def build_extras(version_data, build_path, deploy_path, extras_path, extras_list=[], build_packages=False):
     """
     Compiles and optionally builds packages for all Extras in the mod
 
@@ -48,11 +48,15 @@ def build_extras(version_data, build_path, deploy_path, build_packages=False):
         deploy_path (str): path into which to place zips for deploy
         build_packages (bool): whether to create an individual zipfile for each package
     """
-    dirs = next(os.walk("Extras"))[1]
+    dirs = next(os.walk(extras_path))[1]
     for name in dirs:
-        build_extra(name, version_data, build_packages, build_path, deploy_path)
+        if len(extras_list) > 0:
+            if name in extras_list:
+                build_extra(name, version_data, build_packages, extras_path,build_path, deploy_path)
+        else:
+            build_extra(name, version_data, build_packages, extras_path,build_path, deploy_path)
 
-def build_extra(name, version_data, build_package, build_path, deploy_path):
+def build_extra(name, version_data, build_package, extras_path, build_path, deploy_path):
     """
     Compiles and optionally builds a single Extras package
 
@@ -66,7 +70,7 @@ def build_extra(name, version_data, build_package, build_path, deploy_path):
     extra_path = os.path.join(deploy_path, f"{name}" + "{MAJOR}_{MINOR}_{PATCH}".format(**version_data["VERSION"]))
     logger.info(f"Packaging Extra {name}")
     ensure_path(os.path.join(build_path,"Extras"))
-    shutil.copytree(os.path.join("Extras", name), os.path.join(build_path,"Extras", name))
+    shutil.copytree(os.path.join(extras_path, name), os.path.join(build_path,"Extras", name))
 
     if build_package:
         logger.info(f"Packaging {name}")

@@ -36,6 +36,8 @@ def package(core_release, extras_release, complete_release, mod_data_file):
 
     build_mod_path = os.path.join(config.BUILD_PATH, build_data['mod-name'])
     deploy_mod_path = os.path.join(config.DEPLOY_PATH, build_data['mod-name'])
+    extras_path = "Extras"
+    extras_list = []
     # Clean/recreate the build, deploy and temp paths
     clean_path(os.path.join(build_mod_path))
     clean_path(os.path.join(deploy_mod_path))
@@ -54,9 +56,14 @@ def package(core_release, extras_release, complete_release, mod_data_file):
         logger.info(f"Packaging BASIC release package")
         build_nodep_release(version_data, build_data, build_mod_path, deploy_mod_path)
 
-    if os.path.exists("Extras"):
-      logger.info(f"Packaging EXTRAS release packages")
-      build_extras(version_data, build_mod_path, deploy_mod_path, extras_release)
+    if 'extras-path' in build_data['package']:
+        extras_path = build_data['package']['extras-path']
+    if 'included-extras:' in build_data['package']:
+        extras_list = build_data['package']['included-extras:']
+
+    if os.path.exists(extras_path):
+      logger.info(f"Packaging EXTRAS release packages at {extras_path}")
+      build_extras(version_data, build_mod_path, deploy_mod_path, extras_path, extras_list=extras_list, build_packages=extras_release)
 
     logger.info(f"Packaging complete release package")
     logger.info(f"Collecting dependencies")
