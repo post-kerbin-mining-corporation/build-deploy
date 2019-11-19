@@ -22,10 +22,10 @@ You need the following things to use this package
 
 Please review to get started
 
-1. [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/docs/start.md)
-2. [Configuration](https://github.com/post-kerbin-mining-corporation/build-deploy/docs/configuration.md)
-3. [Changelogs and more](https://github.com/post-kerbin-mining-corporation/build-deploy/docs/misc.md)
-4. [Tests](https://github.com/post-kerbin-mining-corporation/build-deploy/docs/tests.md)
+1. [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md)
+2. [Configuration](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/configuration.md)
+3. [Changelogs and more](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/misc.md)
+4. [Tests](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/tests.md)
 
 # Problems
 

@@ -54,11 +54,11 @@ This specifies that the dependency is pulled from a simple URL. This can either 
 This section provides a list of deploy targets. Each can be enabled or disabled by changing the `enabled` flag. Currently 3 are supported.
 
 `SpaceDock`
-Deploy to Spacedock. You must supply a `mod-id` which is the numeric ID, as indicated in the SpaceDock URL. You must ensure the SpaceDock credentials are setup correctly (see [Getting Started]())
+Deploy to Spacedock. You must supply a `mod-id` which is the numeric ID, as indicated in the SpaceDock URL. You must ensure the SpaceDock credentials are setup correctly (see [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md))
 `CurseForge`
-Deploy to Curseforge. You must supply a `mod-id` which is the numeric ID of the project, as shown on the mod's webpage. You must provide the CurseForge-generated Oauth token (see [Getting Started]())
+Deploy to Curseforge. You must supply a `mod-id` which is the numeric ID of the project, as shown on the mod's webpage. You must provide the CurseForge-generated Oauth token (see [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md))
 `GitHub`
-Deploy to GitHub releases. You must supply appropriate GitHub user information (see [Getting Started]())
+Deploy to GitHub releases. You must supply appropriate GitHub user information (see [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md))
 
 ```
 # Example annotated build data file
