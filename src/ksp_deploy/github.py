@@ -113,7 +113,7 @@ class GitHubReleasesAPI(object):
             "tag_name": version,
             "body": changelog,
             "name": f"{self.repo} {version}",
-            "target_commitish": "master",
+            #"target_commitish": "master",
             "draft": False,
             "prerelease": False
         }
