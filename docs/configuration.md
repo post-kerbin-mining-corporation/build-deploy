@@ -58,7 +58,7 @@ Deploy to Spacedock. You must supply a `mod-id` which is the numeric ID, as indi
 `CurseForge`
 Deploy to Curseforge. You must supply a `mod-id` which is the numeric ID of the project, as shown on the mod's webpage. You must provide the CurseForge-generated Oauth token (see [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md))
 `GitHub`
-Deploy to GitHub releases. You must supply appropriate GitHub user information (see [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md))
+Deploy to GitHub releases. You must supply appropriate GitHub user information (see [Getting Started](https://github.com/post-kerbin-mining-corporation/build-deploy/blob/master/docs/start.md)). You can optionally provide a `branch` to release on (defaults to "master").
 
 ```
 # Example annotated build data file
@@ -87,6 +87,7 @@ deploy:
       mod-id: 230112  # The CurseForge mod ID for deployment
   - GitHub:
       enabled: false  # activate/deactivate this deployment script
+      branch: main # The branch to release on. Defaults to "master"
 ```
 
 

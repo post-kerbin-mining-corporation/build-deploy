@@ -28,4 +28,4 @@ deploy:
     mod-id: 230112  # The CurseForge mod ID for deployment
   GitHub:
     enabled: true  # activate/deactivate this deployment script
-    mod-id: 230112  # The CurseForge mod ID for deployment
+    branch: main # The branch to release on. Defaults to "master"
