@@ -97,12 +97,13 @@ class GitHubReleasesAPI(object):
             self.logger.error(f"{resp.url} returned {resp.text}")
             return resp.text
 
-    def create_release(self, version, changelog):
+    def create_release(self, version, branch, changelog):
         """
         Creates a github release
 
         Inputs:
             version (str): the string mod version to use
+            branch (str): branch to release on
             changelog (str): a Markdown-formatted changelog
         Return:
             response (dict): json response from server
@@ -113,7 +114,7 @@ class GitHubReleasesAPI(object):
             "tag_name": version,
             "body": changelog,
             "name": f"{self.repo} {version}",
-            #"target_commitish": "master",
+            "target_commitish": branch,
             "draft": False,
             "prerelease": False
         }

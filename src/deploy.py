@@ -57,8 +57,13 @@ def deploy(mod_data_file):
             config)
 
     if "GitHub" in build_data["deploy"] and build_data["deploy"]["GitHub"]["enabled"]:
+        branch = "master"
+        if "branch" in build_data["deploy"]["GitHub"]:
+            branch = build_data["deploy"]["GitHub"]["branch"]
+
         deploy_github(
             get_version(version_data),
+            branch,
             changelog,
             zipfile,
             config)
@@ -107,12 +112,13 @@ def deploy_spacedock(version, ksp_version, mod_id, changelog, zipfile, config):
     except requests.exceptions.ConnectionError as err:
         logger.warning(f"Skipping Spacedock deploy as Spacedock is down ({err})")
 
-def deploy_github(version, changelog, zipfile, config):
+def deploy_github(version, branch, changelog, zipfile, config):
     """
     Performs deployment to GitHub releases
 
     Inputs:
         version (str): mod version
+        branch (str): branch to release on
         changelog (str): Markdown formatted changelog
         zipfile (str): path to file to upload
         config (KSPConfiguration): configuration instance
@@ -153,8 +159,8 @@ def deploy_github(version, changelog, zipfile, config):
                 if do_upload:
                     logger.warning(f"Release already exists but has a missing asset, {zipfile} will be uploaded")
         else:
-            logger.info(f"Creating new release for version {version}")
-            response = api.create_release(version, changelog)
+            logger.info(f"Creating new release for version {version} on branch {branch}")
+            response = api.create_release(version, branch, changelog)
             release_id = response["id"]
             do_upload = True
 
