@@ -4,7 +4,6 @@ import shutil
 import zipfile
 import zlib
 import requests
-import subprocess
 from argparse import ArgumentParser
 
 from ksp_deploy.config import KSPConfiguration
