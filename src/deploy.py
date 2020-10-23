@@ -124,9 +124,6 @@ def deploy_github(version, changelog, zipfile, config):
     github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)
     repo_slug = os.environ["TRAVIS_REPO_SLUG"]
 
-    branch_cmd = "git branch --show-current"
-    branch = subprocess.check_output(branch_cmd, shell=True)
-
     with GitHubReleasesAPI(github_user, github_token, repo_slug) as api:
 
         latest = api.get_latest_release()
@@ -157,8 +154,11 @@ def deploy_github(version, changelog, zipfile, config):
                 if do_upload:
                     logger.warning(f"Release already exists but has a missing asset, {zipfile} will be uploaded")
         else:
-            logger.info(f"Creating new release for version {version}")
-            response = api.create_release(version, changelog)
+            branch_cmd = "git branch --show-current"
+            branch = subprocess.check_output(branch_cmd, shell=True)
+
+            logger.info(f"Creating new release for version {version} on branch {branch}")
+            response = api.create_release(version, changelog, branch)
             release_id = response["id"]
             do_upload = True
 
