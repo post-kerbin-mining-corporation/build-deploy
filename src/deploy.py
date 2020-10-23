@@ -4,6 +4,7 @@ import shutil
 import zipfile
 import zlib
 import requests
+import subprocess
 from argparse import ArgumentParser
 
 from ksp_deploy.config import KSPConfiguration
@@ -122,6 +123,9 @@ def deploy_github(version, changelog, zipfile, config):
     github_user = find_credentials("GITHUB_USER", config)
     github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)
     repo_slug = os.environ["TRAVIS_REPO_SLUG"]
+
+    branch_cmd = "git branch --show-current"
+    branch = subprocess.check_output(branch_cmd, shell=True)
 
     with GitHubReleasesAPI(github_user, github_token, repo_slug) as api:
 
