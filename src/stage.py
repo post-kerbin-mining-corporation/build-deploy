@@ -30,7 +30,7 @@ def tag(mod_data_file):
 
     logger.info(f"Tagging {build_data['mod-name']} version {version}")
 
-    repo_slug = os.environ["TRAVIS_REPO_SLUG"]
+    repo_slug = os.environ["GITHUB_REPOSITORY"]
     github_user = find_credentials("GITHUB_USER", config)
     github_user_email = find_credentials("GITHUB_USER_EMAIL", config)
     github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)

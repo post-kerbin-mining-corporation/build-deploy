@@ -121,8 +121,8 @@ def deploy_github(version, changelog, zipfile, config):
 
     github_user = find_credentials("GITHUB_USER", config)
     github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)
-    repo_slug = os.environ["TRAVIS_REPO_SLUG"]
-    branch = os.environ["TRAVIS_BRANCH"]
+    repo_slug = os.environ["GITHUB_REPOSITORY"]
+    branch = os.environ["GITHUB_REF"]
 
     with GitHubReleasesAPI(github_user, github_token, repo_slug) as api:
 
@@ -135,7 +135,7 @@ def deploy_github(version, changelog, zipfile, config):
             logger.info(f"No previous releases")
             latest_name = ""
 
-        slug = os.environ["TRAVIS_REPO_SLUG"]
+        slug = os.environ["GITHUB_REPOSITORY"]
         owner, repo = slug.split('/')
         if latest_name == f"{repo} {version}":
             latest_id = latest["id"]
