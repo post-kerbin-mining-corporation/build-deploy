@@ -25,7 +25,7 @@ class KSPConfiguration:
                 "CURSEFORGE_TOKEN": "ksp-curseforge-token",
                 "GITHUB_USER": "ksp-github-user",
                 "GITHUB_USER_EMAIL": "ksp-github-user-email",
-                "GITHUB_OAUTH_TOKEN": "ksp-github-oauth-token"
+                "OAUTH_TOKEN": "ksp-github-oauth-token"
             }
         def __init__(self, config_path):
             self._load_yaml_config(config_path)

@@ -33,7 +33,7 @@ def tag(mod_data_file):
     repo_slug = os.environ["GITHUB_REPOSITORY"]
     github_user = find_credentials("GITHUB_USER", config)
     github_user_email = find_credentials("GITHUB_USER_EMAIL", config)
-    github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)
+    github_token = find_credentials("OAUTH_TOKEN", config)
 
     tag_test_cmd = f"git tag -l {version}"
     output = subprocess.check_output(tag_test_cmd, shell=True)

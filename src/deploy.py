@@ -120,7 +120,7 @@ def deploy_github(version, changelog, zipfile, config):
     logger.info("Deploying to GitHub Releases")
 
     github_user = find_credentials("GITHUB_USER", config)
-    github_token = find_credentials("GITHUB_OAUTH_TOKEN", config)
+    github_token = find_credentials("OAUTH_TOKEN", config)
     repo_slug = os.environ["GITHUB_REPOSITORY"]
     branch = os.environ["GITHUB_REF"]
 
