@@ -51,6 +51,13 @@ class KSPConfiguration:
             self.ENABLE_SSL = config_data.get("ENABLE_SSL", True)
             self.USE_SSM_CREDENTIALS = config_data.get("USE_SSM_CREDENTIALS", True)
 
+            self.CRED_NAME_TO_KEYS["SPACEDOCK_LOGIN"] = config_data.get("SPACEDOCK_LOGIN_SSM_KEY", "ksp-spacedock-login")
+            self.CRED_NAME_TO_KEYS["SPACEDOCK_PASSWORD"] = config_data.get("SPACEDOCK_PASSWORD_SSM_KEY", "ksp-spacedock-password")
+            self.CRED_NAME_TO_KEYS["CURSEFORGE_TOKEN"] = config_data.get("CURSEFORGE_TOKEN_SSM_KEY", "ksp-curseforge-token")
+            self.CRED_NAME_TO_KEYS["GITHUB_USER"] = config_data.get("GITHUB_USER_SSM_KEY", "ksp-github-user")
+            self.CRED_NAME_TO_KEYS["GITHUB_USER_EMAIL"] = config_data.get("GITHUB_USER_EMAIL_SSM_KEY", "ksp-github-user-email")
+            self.CRED_NAME_TO_KEYS["OAUTH_TOKEN"] = config_data.get("OAUTH_TOKEN_SSM_KEY", "ksp-github-oauth-token")
+
     instance = None
 
     def __init__(self, config_path=".ksp_deploy_config.yml"):
